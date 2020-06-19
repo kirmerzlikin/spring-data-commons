@@ -23,10 +23,13 @@ import javax.enterprise.inject.se.SeContainerInitializer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.repository.Repository;
+
+import java.io.Serializable;
 
 /**
  * CDI integration tests for composed repositories.
- * 
+ *
  * @author Mark Paluch
  */
 class RepositoryFragmentsIntegrationTests {
@@ -66,6 +69,16 @@ class RepositoryFragmentsIntegrationTests {
 		assertThat(shadowed.getPriority()).isEqualTo(2);
 	}
 
+	@Test
+	void shouldLocateNestedFragmentImplementations() {
+
+        NestedComposedRepository repository = getBean(NestedComposedRepository.class);
+        NestedFragmentInterfaceImpl fragment = getBean(NestedFragmentInterfaceImpl.class);
+
+		assertThat(repository.getKey()).isEqualTo("NestedFragmentImpl");
+		assertThat(fragment.getKey()).isEqualTo("NestedFragmentImpl");
+	}
+
 	protected <T> T getBean(Class<T> type) {
 		return container.select(type).get();
 	}
@@ -74,4 +87,19 @@ class RepositoryFragmentsIntegrationTests {
 	static void tearDown() {
 		container.close();
 	}
+
+	public interface NestedFragmentInterface {
+		String getKey();
+	}
+
+	public static class NestedFragmentInterfaceImpl implements NestedFragmentInterface {
+		@Override
+		public String getKey() {
+			return "NestedFragmentImpl";
+		}
+	}
+
+	public interface NestedComposedRepository extends Repository<Object, Serializable>, NestedFragmentInterface {}
+
+	public static class NestedComposedRepositoryImpl {}
 }
