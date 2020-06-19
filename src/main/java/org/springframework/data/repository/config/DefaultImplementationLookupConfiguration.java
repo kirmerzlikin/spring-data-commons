@@ -15,9 +15,6 @@
  */
 package org.springframework.data.repository.config;
 
-import java.beans.Introspector;
-import java.io.IOException;
-
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
@@ -27,6 +24,9 @@ import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.util.Streamable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import java.beans.Introspector;
+import java.io.IOException;
 
 /**
  * Default implementation of {@link ImplementationLookupConfiguration}.
@@ -110,7 +110,7 @@ class DefaultImplementationLookupConfiguration implements ImplementationLookupCo
 	 */
 	@Override
 	public String getImplementationClassName() {
-		return ClassUtils.getShortName(interfaceName).concat(getImplementationPostfix());
+		return getLocalName(interfaceName).concat(getImplementationPostfix());
 	}
 
 	/*
@@ -141,11 +141,15 @@ class DefaultImplementationLookupConfiguration implements ImplementationLookupCo
 		}
 
 		String beanPackage = ClassUtils.getPackageName(beanClassName);
-		String shortName = ClassUtils.getShortName(beanClassName);
-		String localName = shortName.substring(shortName.lastIndexOf('.') + 1);
+		String localName = getLocalName(beanClassName);
 
 		return localName.equals(getImplementationClassName()) //
 				&& getBasePackages().stream().anyMatch(it -> beanPackage.startsWith(it));
+	}
+
+	private String getLocalName(String className) {
+		String shortName = ClassUtils.getShortName(className);
+		return shortName.substring(shortName.lastIndexOf('.') + 1);
 	}
 
 	private boolean isExcluded(String beanClassName, Streamable<TypeFilter> filters) {

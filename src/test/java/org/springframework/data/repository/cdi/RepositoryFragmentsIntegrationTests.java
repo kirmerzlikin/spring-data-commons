@@ -15,18 +15,18 @@
  */
 package org.springframework.data.repository.cdi;
 
-import static org.assertj.core.api.Assertions.*;
-
-import javax.enterprise.inject.se.SeContainer;
-import javax.enterprise.inject.se.SeContainerInitializer;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.enterprise.inject.se.SeContainer;
+import javax.enterprise.inject.se.SeContainerInitializer;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * CDI integration tests for composed repositories.
- * 
+ *
  * @author Mark Paluch
  */
 class RepositoryFragmentsIntegrationTests {
@@ -64,6 +64,16 @@ class RepositoryFragmentsIntegrationTests {
 		assertThat(repository.getPriority()).isEqualTo(1);
 		assertThat(fragment.getPriority()).isEqualTo(1);
 		assertThat(shadowed.getPriority()).isEqualTo(2);
+	}
+
+	@Test
+	void shouldFindImplementationForNestedRepositoryInterface() {
+
+		ComposedRepository repository = getBean(ComposedRepository.class);
+		NestedFragmentInterfaceImpl fragment = getBean(NestedFragmentInterfaceImpl.class);
+
+		assertThat(repository.getKey()).isEqualTo("NestedImpl");
+		assertThat(fragment.getKey()).isEqualTo("NestedImpl");
 	}
 
 	protected <T> T getBean(Class<T> type) {

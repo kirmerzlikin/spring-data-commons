@@ -37,6 +37,18 @@ class DefaultImplementationLookupConfigurationUnitTests {
 		assertThat(getImplementationBeanName(idcMock, "com.acme.UdpRepository")).isEqualTo("udpRepositoryImpl");
 	}
 
+	@Test
+	void shouldHandleNestedInterfaceNames() {
+
+		ImplementationDetectionConfiguration idcMock = mock(ImplementationDetectionConfiguration.class);
+		when(idcMock.getImplementationPostfix()).thenReturn("Impl");
+
+		DefaultImplementationLookupConfiguration lookupConfiguration =
+				new DefaultImplementationLookupConfiguration(idcMock, "com.acme.Repositories$NestedRepository");
+		assertThat(lookupConfiguration.getImplementationBeanName()).isEqualTo("repositories.NestedRepositoryImpl");
+		assertThat(lookupConfiguration.getImplementationClassName()).isEqualTo("NestedRepositoryImpl");
+	}
+
 	private static String getImplementationBeanName(ImplementationDetectionConfiguration idcMock, String interfaceName) {
 
 		DefaultImplementationLookupConfiguration configuration = new DefaultImplementationLookupConfiguration(idcMock,

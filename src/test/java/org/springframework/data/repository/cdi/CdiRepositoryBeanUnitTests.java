@@ -172,7 +172,7 @@ class CdiRepositoryBeanUnitTests {
 		ImplementationLookupConfiguration configuration = captor.getValue();
 
 		assertThat(configuration.getImplementationBeanName()).isEqualTo("cdiRepositoryBeanUnitTests.SampleRepositoryImpl");
-		assertThat(configuration.getImplementationClassName()).isEqualTo("CdiRepositoryBeanUnitTests.SampleRepositoryImpl");
+		assertThat(configuration.getImplementationClassName()).isEqualTo("SampleRepositoryImpl");
 	}
 
 	@Test // DATACMNS-1233
